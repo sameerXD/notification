@@ -1,0 +1,86 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>set user</h1>
+    <form id="form2">
+        name:-
+        <input id = "input2" type="text">
+        <button type="submit">name</button>
+    </form>
+    <h2>send message</h2>
+    <form id="form">
+        
+        message:-
+        <input id="input" type="text" >
+        <button type="submit">send</button>
+    </form>
+    <h3>send notification</h3>
+    <form id="notification_form">
+        
+        to:-
+        <input id="send_to" type="text" >
+        <input id="notification" type="text" >
+
+        <button type="submit">send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+  var user;
+
+  var form = document.getElementById('form');
+  var input = document.getElementById('input');
+  var form2=document.getElementById('form2');
+  var input2 = document.getElementById('input2');
+
+    //   notification form 
+  var notification_form = document.getElementById("notification_form");
+  var send_to = document.getElementById("send_to");
+  var notification = document.getElementById("notification");
+  
+  notification_form.addEventListener('submit', function(e){
+    e.preventDefault();
+    console.log(send_to.value);
+    console.log(notification.value);
+    socket.emit("send_notification", {send_to:send_to.value, send_by:user, notification:notification.value});
+  });
+  form.addEventListener('submit', function(e) {
+      console.log(input.value);
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      input.value = '';
+      console.log(socket.id)
+
+    }
+  });
+
+  form2.addEventListener('submit', function(e) {
+      console.log(input2.value)
+      console.log(socket.id)
+    e.preventDefault();
+    if (input2.value) {
+      socket.emit('set name', {name:input2.value, socket_id:socket.id});
+      input2.value = '';
+    }
+  });
+  socket.on("set_user", function(data){
+    console.log(data);
+    user = data.data[0].email;
+    
+  });
+
+  socket.on("getnotified", function(data){
+      console.log(data);
+  });
+</script>
+</body>
+</html>
